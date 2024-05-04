@@ -3,12 +3,17 @@ using UnityEngine;
 
 public class ArduinoIMUReader : MonoBehaviour
 {
-    SerialPort serialPort = new SerialPort("COM15", 9600); // Adjust COM port
-    public Transform objectTransform; // Assign your GameObject's Transform
+    public Vector3 DriftSlider;
+    
+    
+    SerialPort serialPort = new SerialPort("COM15", 9600); 
+    public Transform objectTransform; 
     
     // For basic filtering
     private Vector3 accelLast = Vector3.zero;
-    public float lowPassFilterFactor = 0.02f;
+    public float lowPassFilterFactor = 0.2f;
+    
+    private KalmanFilterVector3 kalmanFilter;
 
     void Start() {
         serialPort.DtrEnable = true;
@@ -16,11 +21,14 @@ public class ArduinoIMUReader : MonoBehaviour
         serialPort.Open();
         serialPort.ReadTimeout = 5000;
         Debug.Log("Serial port opened.");
+        
+        kalmanFilter = new KalmanFilterVector3();
     }
 
     void Update() {
         if (serialPort.IsOpen) {
             try {
+                
                 string dataString = serialPort.ReadLine();
                
                 // Check for the error indicator from Arduino
@@ -38,24 +46,29 @@ public class ArduinoIMUReader : MonoBehaviour
                     float az = float.Parse(data[2]);
                     Vector3 currentAccel = new Vector3(ax, ay, az);
                     
-                    // Apply a very basic low-pass filter to the accelerometer data
-                    currentAccel = Vector3.Lerp(accelLast, currentAccel, lowPassFilterFactor);
-                    accelLast = currentAccel;
-
-                    // Assuming ax, ay, az include gravity, you need your filtering/adjustment here
-                    // This example doesn't specifically remove gravity but applies basic smoothing
-
+                    Vector3 filteredAccel = kalmanFilter.Update(currentAccel);
+                    
+                    //currentAccel = Vector3.Lerp(accelLast, currentAccel, lowPassFilterFactor);
+                   // accelLast = currentAccel;
+                        
+                   Debug.Log(data[0] +  data[1] + data[2]);
+        
                     // Apply rotation - assuming you're happy with rotation handling
                     float gx = float.Parse(data[3]);
                     float gy = float.Parse(data[4]);
                     float gz = float.Parse(data[5]);
-                    objectTransform.Rotate(new Vector3(gy, gx, -gz) * Time.deltaTime , Space.World);
+                    
+                    Vector3 currentGyro = new Vector3(gx, gy, -gz);
+                    Vector3 filteredGyro = kalmanFilter.Update(currentGyro);
+                    objectTransform.Rotate(currentGyro * Time.deltaTime , Space.World);
 
                     // For movement - This is oversimplified for demonstration
                     // In practice, you'd need to integrate acceleration twice to get position,
                     // but that's very prone to error without removing gravity.
                     // This simple approach just moves the object based on filtered acceleration.
-                    objectTransform.Translate(currentAccel * Time.deltaTime);
+
+                    filteredAccel -= DriftSlider;
+                 //  objectTransform.Translate(filteredAccel * Time.deltaTime);
                 }
                 
             } catch (System.Exception ex) {
