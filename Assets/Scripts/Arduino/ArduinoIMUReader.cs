@@ -1,59 +1,63 @@
 using System.IO.Ports;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class ArduinoIMUReader : MonoBehaviour
+public class ArduinoImuReader : MonoBehaviour
 {
     #region Serial Port and Filtering Properties
-    public Vector3 DriftSlider;
+ 
     public Transform objectTransform;
 
     // Serial port settings
-    private SerialPort serialPort = new SerialPort("COM4", 9600);
+    public SerialPort SerialPort = new SerialPort("COM8", 115200);
 
     // For basic filtering
-    private Vector3 accelLast = Vector3.zero;
+    private Vector3 _accelLast = Vector3.zero;
     public float lowPassFilterFactor = 0.2f;
-
-    private KalmanFilterVector3 kalmanFilter;
-
+    
+    private KalmanFilterVector3 _kalmanFilter;
+    private MadgwickFilter _madgwickFilter;
+    
+    private Vector3 _rawGyro;
+    private Vector3 _rawAccel;
+    
     // Variables to store filtered sensor data for external access
-    private Vector3 filteredAccel = Vector3.zero;
-    private Vector3 filteredGyro = Vector3.zero;
+    public Vector3 filteredAccel = Vector3.zero;
+    public Vector3 filteredGyro = Vector3.zero;
+    public Quaternion filteredQuaternion = Quaternion.identity;
     #endregion
 
-    #region Unity Lifecycle 
+    #region Unity Lifecycle
+
     void Start()
     {
-
-        serialPort.DtrEnable = true;  // Ensure that the DTR is enabled to help with Arduino recognition
-        serialPort.RtsEnable = true;  // Ensure that the RTS is enabled to help with Arduino recognition
-        serialPort.Open();  // Open the serial port connection
-        serialPort.ReadTimeout = 5000;  // Set the serial read timeout to 5000 milliseconds
-        Debug.Log("Serial port opened.");  // Log that the serial port is successfully opened
-
-        kalmanFilter = new KalmanFilterVector3();  // Initialize the Kalman filter
+        SerialPort.DtrEnable = true;
+        SerialPort.RtsEnable = true;
+        SerialPort.Open();
+        SerialPort.ReadTimeout = 5000;
+        Debug.Log("Serial port opened.");
+        _kalmanFilter = new KalmanFilterVector3();
+        _madgwickFilter = new MadgwickFilter();
     }
 
     void Update()
     {
-        if (serialPort.IsOpen)
+        if (SerialPort.IsOpen)
         {
             try
             {
-                string dataString = serialPort.ReadLine();  // Read a line from the serial port
-
+                string dataString = SerialPort.ReadLine();  
                 // Check for the error indicator from Arduino
                 if (dataString.StartsWith("F") || dataString.StartsWith("E"))
                 {
-                    Debug.LogError("Sensor error detected.");  // Log an error if the first character is F or E
-                    return;  // Return early if there is an error
+                    Debug.LogError("Sensor error detected."); 
+                    return;  
                 }
-
-                //Debug.Log("Received data: " + dataString);  // Log the received data string
+                
                 string[] data = dataString.Split(',');  // Split the data string into parts
                 if (data.Length >= 9)
-                {  // Ensure full dataset received
-                    ProcessData(data);  // Process the data if all parts are received
+                {  
+                    ProcessData(data);  
                 }
             }
             catch (System.Exception ex)
@@ -62,35 +66,43 @@ public class ArduinoIMUReader : MonoBehaviour
             }
         }
     }
-
+    
     void OnDestroy()
-    {
-        if (serialPort != null && serialPort.IsOpen)
-            serialPort.Close();  // Close the serial port when the script or object is destroyed
+    { 
+        if (SerialPort != null && SerialPort.IsOpen) SerialPort.Close();  // Close the serial port when the script or object is destroyed
     }
     #endregion
 
     #region Data Processing
     private void ProcessData(string[] data)
     {
-        // Parse and apply filtering to accelerometer data
         float ax = float.Parse(data[0]);
         float ay = float.Parse(data[1]);
         float az = float.Parse(data[2]);
-        Vector3 currentAccel = new Vector3(ax, ay, az);
-        filteredAccel = kalmanFilter.Update(currentAccel);  // Apply Kalman filter to accelerometer data
-
-        // Parse and apply filtering to gyroscope data
+        _rawAccel = new Vector3(ax, ay,az);
+        filteredAccel = _rawAccel;//_kalmanFilter.Update(filteredAccel);  // Apply Kalman filter to accelerometer data
+        
         float gx = float.Parse(data[3]);
         float gy = float.Parse(data[4]);
         float gz = float.Parse(data[5]);
-        Vector3 currentGyro = new Vector3(gx, gy, -gz);
-        filteredGyro = kalmanFilter.Update(currentGyro);  // Apply Kalman filter to gyroscope data
-
-        objectTransform.Rotate(filteredGyro * Time.deltaTime, Space.World);  // Apply rotation based on filtered gyro data
+        _rawGyro = new Vector3(gx, gy, gz); 
+        Vector3 madgwickGyro = new Vector3(gx, -gy, gz) * Mathf.Deg2Rad; // Convert gyro data to radians and align y axis to madgwick filter
+        filteredGyro = _kalmanFilter.Update(_rawGyro);  // Apply Kalman filter to gyroscope data
+        //  objectTransform.Rotate(filteredGyro * Time.deltaTime, Space.World);  // Apply rotation based on filtered gyro data
+        filteredQuaternion = _madgwickFilter.UpdateFilter(madgwickGyro, _rawAccel, Time.deltaTime);
+        Debug.Log(filteredQuaternion);
+        objectTransform.rotation = ApplyQuaternionToUnityCoordinateSystem(filteredQuaternion);
+       
     }
-    #endregion
 
+    private Quaternion ApplyQuaternionToUnityCoordinateSystem(Quaternion q)
+    {
+        q = new Quaternion(q.x, q.z, -q.y, q.w);
+        return q;
+    }
+
+    #endregion
+    
     #region Public Methods
     public Vector3 GetFilteredGyro()
     {
