@@ -38,8 +38,7 @@ public class PointSystem : MonoBehaviour
     #region Score Update UI
     private void UpdateScoreDisplay()
     {
-        // Update UI 
-        Debug.Log("Current Score: " + score);
+        UIManager.Instance.UpdateScore(score);
     }
     #endregion
 

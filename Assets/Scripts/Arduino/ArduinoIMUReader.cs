@@ -4,7 +4,7 @@ using System.Threading;
 using System.Collections.Concurrent;
 using UnityEngine.Serialization;
 
-public class ArduinoImuReader : MonoBehaviour
+public class ArduinoIMUReader : MonoBehaviour
 {
     #region Serial Port and Filtering Properties
  
