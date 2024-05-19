@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MadgwickFilter
 {
-    private float beta = 0.033f;  // 2 * proportional gain
+    private float beta = 0.0063f;  // 2 * proportional gain
     private Quaternion q = new Quaternion(0f, 0f, 0f, 1f);
 
     public MadgwickFilter()

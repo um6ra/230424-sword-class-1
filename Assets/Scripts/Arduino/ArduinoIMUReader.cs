@@ -11,7 +11,6 @@ public class ArduinoIMUReader : MonoBehaviour
  
     public bool magnometerEnabled = true;
     public Transform objectTransform;
-    public Transform objectTransformNoMag;
     
     // Serial port settings
     public string portName = "COM8";
@@ -24,11 +23,11 @@ public class ArduinoIMUReader : MonoBehaviour
     
     // For basic filtering
     private Vector3 _accelLast = Vector3.zero;
-    //public float lowPassFilterFactor = 0.9f;
+    public float lowPassFilterFactor = 0.9f;
     
     private KalmanFilterVector3 _kalmanFilter;
     private MadgwickFilter _madgwickFilter;
-    //private LowPassFilter _lowPassFilter;
+    private LowPassFilter _lowPassFilter;
     
     private Vector3 _rawGyro;
     private Vector3 _rawAccel;
@@ -61,7 +60,7 @@ public class ArduinoIMUReader : MonoBehaviour
 
         _kalmanFilter = new KalmanFilterVector3();
         _madgwickFilter = new MadgwickFilter();
-      //  _lowPassFilter = new LowPassFilter(lowPassFilterFactor);
+        _lowPassFilter = new LowPassFilter(lowPassFilterFactor);
     }
 
     void Update()
@@ -129,7 +128,7 @@ public class ArduinoIMUReader : MonoBehaviour
         float ay = float.Parse(data[1]);
         float az = float.Parse(data[2]);
         _rawAccel = new Vector3(ax, ay,az) ;
-     // filteredAccel = _lowPassFilter.Filter(_rawAccel);  
+      filteredAccel = _lowPassFilter.Filter(_rawAccel);  
       // _madgwickAccel = new Vector3(filteredAccel.x,-filteredAccel.y , filteredAccel.z); // ENU coordinate system
         _madgwickAccel = new Vector3(_rawAccel.x, -_rawAccel.y, _rawAccel.z); // ENU coordinate system
         
@@ -137,7 +136,7 @@ public class ArduinoIMUReader : MonoBehaviour
         float gy = float.Parse(data[4]);    
         float gz = float.Parse(data[5]);
         _rawGyro = new Vector3(gx, gy, gz); 
-       // filteredGyro = _lowPassFilter.Filter(_rawGyro); 
+        filteredGyro = _lowPassFilter.Filter(_rawGyro); 
       //  _madgwickGyro = new Vector3(filteredGyro.x, -filteredGyro.y, filteredGyro.z) * Mathf.Deg2Rad ; // Convert gyro data to radians and align y axis to madgwick filter
       _madgwickGyro = new Vector3(_rawGyro.x, -_rawGyro.y, _rawGyro.z) * Mathf.Deg2Rad; // Convert gyro data to radians and align y axis to madgwick filter
       
