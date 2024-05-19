@@ -21,7 +21,9 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
         else
-        Destroy(gameObject);
+        {
+            Destroy(gameObject);
+        }
     }
     #endregion
 
@@ -59,32 +61,50 @@ public class GameManager : MonoBehaviour
     {
         lives = 3; // default lives
         score = 0; // reset score
-        gameState = GameState.Playing; // start playing
+        ChangeState(GameState.Playing); // start playing
     }
 
     public void PauseGame()
     {
-        gameState = GameState.Paused;
-        Time.timeScale = 0; // Stop 
+        ChangeState(GameState.Paused);
     }
 
     public void ResumeGame()
     {
-        gameState = GameState.Playing;
-        Time.timeScale = 1; // Resume 
+        ChangeState(GameState.Playing);
     }
 
     public void GameOver()
     {
-        gameState = GameState.GameOver;
-        Time.timeScale = 0; // Stop
+        ChangeState(GameState.GameOver);
         Debug.Log("Game Over!");
         // game over screen or menu 
     }
 
     private void UpdateGameplay()
     {
-        // Add gameplay update logic here
+        //todo
+    }
+
+    private void ChangeState(GameState newState)
+    {
+        gameState = newState;
+        switch (newState)
+        {
+            case GameState.Playing:
+                Time.timeScale = 1; // Resume
+                break;
+            case GameState.Paused:
+                Time.timeScale = 0; // Stop
+                break;
+            case GameState.GameOver:
+                Time.timeScale = 0; // Stop
+                break;
+            case GameState.Initializing:
+                // Any initialization logic
+                break;
+        }
+        UpdateGameStateUI();
     }
     #endregion
 
@@ -99,11 +119,41 @@ public class GameManager : MonoBehaviour
     {
         lives--;
         if (lives <= 0)
+        {
             GameOver();
+        }
         else
+        {
             Debug.Log("Lives left: " + lives);
-            // respawn? what happens when we lose a life and still have lives left?
+            // Handle respawn logic if needed
+            RespawnPlayer();
+        }
+    }
+
+    private void RespawnPlayer()
+    {
+        // Implement respawn logic here
+        Debug.Log("Respawning player...");
+        // Reset player position, health, etc.
+        ChangeState(GameState.Playing); // Resume game after respawn
     }
     #endregion
 
+    #region UI
+    public void UpdateGameStateUI()
+    {
+        switch (gameState)
+        {
+            case GameState.Playing:
+                UIManager.Instance.UpdateGameState("");
+                break;
+            case GameState.Paused:
+                UIManager.Instance.UpdateGameState("Paused");
+                break;
+            case GameState.GameOver:
+                UIManager.Instance.UpdateGameState("Game Over");
+                break;
+        }
+    }
+    #endregion
 }

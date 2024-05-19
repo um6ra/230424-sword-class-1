@@ -11,6 +11,11 @@ public class SwordBehaviour : MonoBehaviour
     #endregion
 
     #region Unity Lifecycle
+    void Start()
+    {
+        InitializeSword();
+    }
+
     void Update()
     {
         if (imuReader != null)
@@ -18,6 +23,15 @@ public class SwordBehaviour : MonoBehaviour
             Vector3 filteredGyro = imuReader.GetFilteredGyro(); // Get the filtered gyroscope data from IMU reader
             HandleSwordSwing(filteredGyro); // Handle the sword swing detection and processing
         }
+    }
+    #endregion
+
+    #region Initialization
+    private void InitializeSword()
+    {
+        lastGyro = Vector3.zero; // Initialize the last gyro data
+        isSwinging = false; // Ensure the sword is not marked as swinging initially
+        Debug.Log("Sword initialized.");
     }
     #endregion
 
@@ -29,9 +43,12 @@ public class SwordBehaviour : MonoBehaviour
 
         if (gyroDelta.magnitude > swingThreshold)
         {
-            isSwinging = true; // Mark the sword as swinging
-            Debug.Log("Sword swing detected!");
-            Invoke(nameof(ResetSwing), 2f); // Set a delay after which the sword stops swinging
+            if (!isSwinging)
+            {
+                isSwinging = true; // Mark the sword as swinging
+                Debug.Log("Sword swing detected!");
+                Invoke(nameof(ResetSwing), 2f); // Set a delay after which the sword stops swinging
+            }
         }
     }
     #endregion
@@ -39,15 +56,18 @@ public class SwordBehaviour : MonoBehaviour
     #region Collision Detection
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Collision detected with: " + other.name);
-        if (other.CompareTag("Fruit")) // Check if the sword hits a fruit later optimise it with swinging
+        if (isSwinging)
         {
-            Debug.Log("Hit fruit!");
-            Destroy(other.gameObject); // Destroy the fruit object
-            if (PointSystem.Instance != null)
+            Debug.Log("Collision detected with: " + other.name);
+            if (other.CompareTag("Fruit")) // Check if the sword hits a fruit
             {
-                PointSystem.Instance.AddPointsForFruitSlashed(); // Add points for slashing the fruit
-                Debug.Log("Fruit slashed.");
+                Debug.Log("Hit fruit!");
+                Destroy(other.gameObject); // Destroy the fruit object
+                if (PointSystem.Instance != null)
+                {
+                    PointSystem.Instance.AddPointsForFruitSlashed(); // Add points for slashing the fruit
+                    Debug.Log("Fruit slashed.");
+                }
             }
         }
     }
