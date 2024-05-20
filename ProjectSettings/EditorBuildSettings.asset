@@ -4,7 +4,16 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 0
+    path: Assets/Plugins/BLEPlugin/Example/Scenes/BluetoothLowEnergyExample.unity
+    guid: 8de8ef3b5ff593444a5c3b491e054c42
+  - enabled: 0
+    path: Assets/BluetoothAPI/Scenes/scan_scene2.unity
+    guid: 789d17ad702404f68a1a9d43a3f83f58
+  - enabled: 1
+    path: Assets/BluetoothAPI/Samples/BLE/BLE.unity
+    guid: a247264e1d3fa411eadfb3bd8e7f6df2
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 95e36a24d21880f4899a718f1f925c64, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 812f2f943c9c04c48aee7256407c6a47, type: 2}
