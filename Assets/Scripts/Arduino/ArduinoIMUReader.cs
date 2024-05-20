@@ -10,8 +10,9 @@ public class ArduinoIMUReader : MonoBehaviour
     #region Serial Port and Filtering Properties
  
     public bool magnometerEnabled = true;
-    public Transform objectTransform;
-    
+    public Transform objectTransform; 
+    public OVRHand hand; // Reference to the hand
+
     // Serial port settings
     public string portName = "COM8";
     public int baudRate = 115200;
@@ -89,8 +90,12 @@ public class ArduinoIMUReader : MonoBehaviour
         {
             filteredQuaternion = _madgwickFilter.UpdateFilterNoMag(_madgwickGyro, _madgwickAccel, Time.deltaTime);
         }
-        ApplyQuaternionToUnityCoordinateSystem(filteredQuaternion);
-        objectTransform.transform.rotation = ApplyQuaternionToUnityCoordinateSystem(filteredQuaternion);
+
+        // Attach the filtered quaternion to the hand
+        if (hand != null)
+        {
+            hand.transform.localRotation = ApplyQuaternionToUnityCoordinateSystem(filteredQuaternion);
+        }
     }
     
     void OnDestroy()
@@ -151,8 +156,7 @@ public class ArduinoIMUReader : MonoBehaviour
 
     private Quaternion ApplyQuaternionToUnityCoordinateSystem(Quaternion q)
     {
-        q = new Quaternion(q.x, -q.z, q.y, q.w);
-        return q;
+        return new Quaternion(q.x, -q.z, q.y, q.w);
     }
     
     public static float CalculateHeading(Vector3 mag, float magneticDeclination)
