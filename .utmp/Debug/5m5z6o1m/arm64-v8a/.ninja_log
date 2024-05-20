@@ -1,0 +1,11 @@
+# ninja log v5
+108	314	7379265526857438	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	658d0ba48c9a6cd7
+316	1273	7379265530234698	C:/Users/liwad/Documents/SwordProject/230424-sword-class-1/Library/PramData/AndroidApplicationController/Cache/com.FrogGames.SwordGame/gradle-project/unityLibrary/build/intermediates/cxx/Debug/5m5z6o1m/obj/arm64-v8a/libswappywrapper.so	77d4c07ba54b919b
+77	1324	7379265536618059	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	440710496718d001
+44	1358	7379265537172012	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	7dbeaf7d1e2a4efb
+19	1376	7379265537338231	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	e6a029857bccbf
+101	1389	7379265536975580	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	c0398438e5522ea
+91	1440	7379265537879483	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	8744beceb273c02f
+1	1478	7379265538390524	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	7cdaab5370e84999
+56	1621	7379265539834582	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	989e9f9e25450d42
+1622	1869	7379265541503288	C:/Users/liwad/Documents/SwordProject/230424-sword-class-1/Library/PramData/AndroidApplicationController/Cache/com.FrogGames.SwordGame/gradle-project/unityLibrary/build/intermediates/cxx/Debug/5m5z6o1m/obj/arm64-v8a/libgame.so	7c4b6697eb5204f

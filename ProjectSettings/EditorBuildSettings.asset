@@ -4,7 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/LiwaScene.unity
+    guid: 9b90e8e870143e64e800b5b5077abcd6
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 95e36a24d21880f4899a718f1f925c64, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 812f2f943c9c04c48aee7256407c6a47, type: 2}

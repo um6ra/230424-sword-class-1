@@ -1,0 +1,11 @@
+# ninja log v5
+43	277	7379218223680162	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	41094d6238eab0de
+279	490	7379218225332072	C:/Users/liwad/Documents/SwordProject/230424-sword-class-1/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/Debug/e6i4y1c4/obj/arm64-v8a/libswappywrapper.so	f3bd7d4789b9ca31
+23	746	7379218228405496	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	2c4c863975e6283f
+29	757	7379218228547425	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	c0c965e11fac256
+11	758	7379218228577846	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	ec37982aaac3689e
+36	762	7379218228628170	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	405e821e4ecc6948
+6	794	7379218228986792	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	b0a0233dfaf3ea47
+16	850	7379218229462502	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	e9ecb5ff13659678
+1	875	7379218229721805	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	c4d1df8b76b93bc7
+875	1027	7379218230849174	C:/Users/liwad/Documents/SwordProject/230424-sword-class-1/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/Debug/e6i4y1c4/obj/arm64-v8a/libgame.so	d80afd49c01339f
