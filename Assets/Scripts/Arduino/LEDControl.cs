@@ -1,48 +1,76 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System.IO.Ports;
+using System.Threading;
+using UnityEngine;
 
-public class LEDControl : MonoBehaviour
+public class SerialComm : MonoBehaviour
 {
-    SerialPort sp;
-    public string portName = "COM13"; // Change to match your Arduino port
+    public string portName = "COM3";
+    public int baudRate = 9600;
 
-    void Start() {
-        sp = new SerialPort(portName, 9600);
-        try {
-            sp.Open(); // Open the serial port
-        } catch (System.Exception e) {
-            Debug.LogError("Could not open serial port: " + e.Message);
+    private SerialPort serialPort;
+    private Thread serialThread;
+    private bool isRunning = false;
+
+    void Start()
+    {
+        OpenConnection();
+    }
+
+    void OnApplicationQuit()
+    {
+        CloseConnection();
+    }
+
+    void OpenConnection()
+    {
+        serialPort = new SerialPort(portName, baudRate);
+        try
+        {
+            serialPort.Open();
+            serialPort.ReadTimeout = 50;
+            isRunning = true;
+            serialThread = new Thread(ReadSerial);
+            serialThread.Start();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Unable to open serial port: " + e.Message);
+        }
+    }
+
+    void ReadSerial()
+    {
+        while (isRunning && serialPort != null && serialPort.IsOpen)
+        {
+            try
+            {
+                // Add read logic if necessary
+            }
+            catch (System.TimeoutException)
+            {
+            }
+        }
+    }
+
+    void CloseConnection()
+    {
+        isRunning = false;
+        if (serialThread != null) serialThread.Join();
+        if (serialPort != null && serialPort.IsOpen) serialPort.Close();
+    }
+
+    // Call this to control LEDs
+    public void WriteToSerial(string message)
+    {
+        if (serialPort != null && serialPort.IsOpen)
+        {
+            serialPort.WriteLine(message);
         }
     }
     
-    void Update() {
-        if(Input.GetKeyDown(KeyCode.Alpha1)) {
-            ControlLED(0, false);
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha2)) {
-            ControlLED(1, false);
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha3)) {
-            ControlLED(2, false);
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha4)) {
-            ControlLED(3, false);
-        }
-    }
-
-    public void ControlLED(int index, bool state)
+    public void UpdateMana(float manaValue)
     {
-        if (sp != null && sp.IsOpen)
-        {
-            string command = index.ToString() + "," + (state ? "1" : "0") + "\n";
-            sp.Write(command);
-        }
-    }
-
-    void OnApplicationQuit() {
-        if(sp != null && sp.IsOpen)
-            sp.Close(); // Close the port when the application closes
+        WriteToSerial(manaValue.ToString());
     }
 }
