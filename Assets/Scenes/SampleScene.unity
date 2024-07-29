@@ -1448,9 +1448,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b75fd2413495545862a5067e360932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  magnometerEnabled: 1
   objectTransform: {fileID: 564998369}
-  objectTransformNoMag: {fileID: 657441564}
-  portName: COM8
+  hand: {fileID: 0}
+  portName: COM6
   baudRate: 115200
   lowPassFilterFactor: 0.2
   heading: 0
@@ -1827,8 +1828,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b75fd2413495545862a5067e360932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  magnometerEnabled: 1
   objectTransform: {fileID: 980379049}
-  objectTransformNoMag: {fileID: 0}
+  hand: {fileID: 0}
   portName: COM8
   baudRate: 115200
   lowPassFilterFactor: 0.02
@@ -2762,8 +2764,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b75fd2413495545862a5067e360932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  magnometerEnabled: 1
   objectTransform: {fileID: 1755819564}
-  objectTransformNoMag: {fileID: 0}
+  hand: {fileID: 0}
   portName: COM8
   baudRate: 115200
   lowPassFilterFactor: 0.02
